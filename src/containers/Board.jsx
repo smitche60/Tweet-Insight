@@ -41,6 +41,8 @@ class Board extends React.Component {
             <Card
               horizontal
               title={<div>{column.name} <div><Icon right>edit</Icon></div></div>}
+              className={'tangerine-background'}
+              textClassName={'cerulean-text'}
             >
               <Row>
                 <Input label="Enter a ColumnName" s={12} onChange={event => this.props.nameColumn(this.props.boardName, index, event.target.value)} />

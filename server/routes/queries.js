@@ -1,4 +1,6 @@
-// Elasticsearch queries and helper functions
+// Elasticsearch queries and helper functions for adding request parameters
+// to the query.
+
 const applyFilters = (esBody, senderGender, recipientsGender,
   sentiment, senderFollowerMin, senderFollowerMax) => {
   if (senderGender !== false) {

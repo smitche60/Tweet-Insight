@@ -1,13 +1,17 @@
+// Set up the Elasticsearch client and endpoints for querying elasticsearch.
+// The frontend will call these endpoints, sending the necessary parameters
+// in the request body. The endpoints return the data from elasticsearch that
+// has been clean by the helper functions in cleanES.js. The elasticsearch
+// queries themselves can be found in queries.js.
+
 require('dotenv').config();
 const app = require('../../server.js');
 const elasticsearch = require('elasticsearch');
 const queries = require('./queries.js');
 const clean = require('./cleanES.js');
 
-
 const client = new elasticsearch.Client({
   host: process.env.ELASTICSEARCH_HOST,
-  log: 'trace',
 });
 const index = 'twitter';
 const type = 'tweet';
@@ -113,7 +117,16 @@ app.post('/api/SelectionsOverTime', (req, res) => {
 
 app.post('/api/BucketedBarChart', (req, res) => {
   const keyword = req.body.keyword ? req.body.keyword.toLowerCase().replace(' ', '*') : '*';
+  const senderGender = false;
+  const recipientsGender = req.body.recipientsGender === undefined ?
+    false : clean.cleanGender(req.body.recipientsGender);
+  const sentiment = req.body.sentiment || false;
+  const senderFollowerMin = req.body.senderFollowerMin || false;
+  const senderFollowerMax = req.body.senderFollowerMax || false;
   let esBody = queries.BucketedBarChartBody();
+
+  esBody = queries.applyFilters(esBody, senderGender, recipientsGender,
+    sentiment, senderFollowerMin, senderFollowerMax);
 
   esBody = queries.addKeywordToMusts(esBody, keyword);
 
@@ -123,22 +136,31 @@ app.post('/api/BucketedBarChart', (req, res) => {
     size: 0,
     from: 0,
     body: esBody,
-  }).then(body => body.aggregations.followerCount_ranges)
+  }).then(body => clean.cleanBucketedBarChart(body.aggregations.followerCount_ranges))
     .then(data => res.send(data));
 });
 
 app.post('/api/BucketedBarChartBodySentiment', (req, res) => {
   const keyword = req.body.keyword ? req.body.keyword.toLowerCase().replace(' ', '*') : '*';
+  const senderGender = req.body.senderGender === undefined ?
+    false : clean.cleanGender(req.body.senderGender);
+  const recipientsGender = req.body.recipientsGender === undefined ?
+    false : clean.cleanGender(req.body.recipientsGender);
+  const sentiment = false;
+  const senderFollowerMin = req.body.senderFollowerMin || false;
+  const senderFollowerMax = req.body.senderFollowerMax || false;
   let esBody = queries.BucketedBarChartSentimentBody();
 
-  esBody = queries.addKeywordToMusts(esBody, keyword);
+  esBody = queries.applyFilters(esBody, senderGender, recipientsGender,
+    sentiment, senderFollowerMin, senderFollowerMax);
 
+  esBody = queries.addKeywordToMusts(esBody, keyword);
   client.search({
     index,
     type,
     size: 0,
     from: 0,
     body: esBody,
-  }).then(body => body.aggregations.followerCount_ranges)
+  }).then(body => clean.cleanBucketedBarChartSentiment(body.aggregations.followerCount_ranges))
     .then(data => res.send(data));
 });

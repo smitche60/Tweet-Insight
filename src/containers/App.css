@@ -1,8 +1,6 @@
+@import url('../index.css');
+
 #query-builder {
   background-color: blue;
   height: 100%;
-}
-
-body {
-  background-color: #fefefb;
 }
