@@ -1,3 +1,5 @@
+// Helper functions to clean the data returned by the Elasticsearch queries
+
 const cleanAdjacencyMatrix = (buckets, categoryA, categoryB) => {
   const obj = {};
   buckets.forEach((bucket) => {

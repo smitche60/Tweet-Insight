@@ -1,9 +1,14 @@
+// Set up the Elasticsearch client and endpoints for querying elasticsearch.
+// The frontend will call these endpoints, sending the necessary parameters
+// in the request body. The endpoints return the data from elasticsearch that
+// has been clean by the helper functions in cleanES.js. The elasticsearch
+// queries themselves can be found in queries.js.
+
 require('dotenv').config();
 const app = require('../../server.js');
 const elasticsearch = require('elasticsearch');
 const queries = require('./queries.js');
 const clean = require('./cleanES.js');
-
 
 const client = new elasticsearch.Client({
   host: process.env.ELASTICSEARCH_HOST,

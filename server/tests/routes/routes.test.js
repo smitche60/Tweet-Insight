@@ -7,16 +7,6 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-describe('Math', () => {
-  it('Adds 2 + 2', () => {
-    expect(2 + 2).to.equal(4);
-  });
-  it('Multiplies by 2', () => {
-    expect(2 * 5).to.equal(10);
-  });
-});
-
-
 describe('API Endpoints', () => {
   it('/api/KeywordAcrossGender should return data', (done) => {
     chai.request(app)
